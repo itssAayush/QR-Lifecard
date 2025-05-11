@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR LifeCard - Family Info</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #2c5364;
+      color: #333;
+      padding-top: 80px;
+    }
+
+    header {
+      width: 100%;
+      background: #ffffffcc;
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-buttons a {
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: white;
+      background: #00c853;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .nav-buttons a:hover {
+      background: #00a043;
+      transform: scale(1.05);
+    }
+
+    /* Hamburger styles */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: #333;
+    }
+
+    /* Mobile view */
+    @media (max-width: 768px) {
+      .nav-buttons {
+        display: none;
+        position: absolute;
+        top: 70px;
+        right: 30px;
+        flex-direction: column;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      }
+
+      .nav-buttons a {
+        background: #00c853;
+        margin-bottom: 10px;
+      }
+
+      .nav-buttons.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    .family-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .family-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #d32f2f;
+    }
+
+    .family-list {
+      margin-bottom: 30px;
+    }
+
+    .family-member {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background: #fafafa;
+    }
+
+    .family-member p {
+      margin: 5px 0;
+      font-size: 1.05rem;
+    }
+
+    .update-button {
+      background: #00c853;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s, transform 0.2s;
+      margin-top: 20px;
+    }
+
+    .update-button:hover {
+      background: #00a043;
+      transform: scale(1.05);
+    }
+
+    .update-form {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .update-form input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .save-button {
+      background: #ff5252;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s, transform 0.2s;
+      margin-top: 10px;
+    }
+
+    .save-button:hover {
+      background: #d50000;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">QR LifeCard</div>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div class="nav-buttons" id="nav-menu">
+      <a href="loginsignup.html">Login</a>
+      <a href="profile.html">Profile</a>
+      <a href="familyinfo.html">Family Info</a>
+      <a href="qrgen.html">QR Generator</a>
+      <a href="logout.html">Signout</a>
+    </div>
+  </header>
+
+  <div class="family-container">
+    <h2>Family Information</h2>
+
+    <div class="family-list" id="family-list">
+    </div>
+
+    <button class="update-button" onclick="showFamilyForm()">Update Family Info</button>
+
+    <div class="update-form" id="update-form">
+      <h3>Update/Add Family Member</h3>
+
+      <input type="text" id="member-name" placeholder="Family Member Name" required />
+      <input type="text" id="member-relation" placeholder="Relation (e.g., Father, Mother)" required />
+      <input type="text" id="member-contact" placeholder="Contact Number" required />
+
+      <button class="save-button" onclick="saveFamilyMember()">Save</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      const navMenu = document.getElementById('nav-menu');
+      navMenu.classList.toggle('show');
+    }
+
+    function showFamilyForm() {
+      document.getElementById('update-form').style.display = 'block';
+    }
+
+    function saveFamilyMember() {
+      const name = document.getElementById('member-name').value.trim();
+      const relation = document.getElementById('member-relation').value.trim();
+      const contact = document.getElementById('member-contact').value.trim();
+
+      if (name && relation && contact) {
+        const familyList = document.getElementById('family-list');
+
+        const memberDiv = document.createElement('div');
+        memberDiv.className = 'family-member';
+        memberDiv.innerHTML = `
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Relation:</strong> ${relation}</p>
+          <p><strong>Contact:</strong> ${contact}</p>
+        `;
+
+        familyList.appendChild(memberDiv);
+
+        // Clear the form
+        document.getElementById('member-name').value = '';
+        document.getElementById('member-relation').value = '';
+        document.getElementById('member-contact').value = '';
+
+        // Hide the form after saving
+        document.getElementById('update-form').style.display = 'none';
+      } else {
+        alert('Please fill all the fields!');
+      }
+    }
+  </script>
+
+</body>
+</html>

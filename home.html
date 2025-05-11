@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR LifeCard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #e0f7fa, #f0f4c3);
+      color: #333;
+    }
+
+    header {
+      width: 100%;
+      background: #ffffffcc;
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    .nav-buttons {
+      position: absolute;
+      top: 70px;
+      right: 40px;
+      background: #ffffffee;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 200px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .nav-buttons a {
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 10px 15px;
+      border-radius: 8px;
+      color: #333;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    .nav-buttons a:hover {
+      background: #e0e0e0;
+    }
+
+    .nav-buttons.show {
+      display: flex;
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: #333;
+      margin: 4px 0;
+      transition: all 0.3s ease;
+    }
+
+    .hero {
+      height: 100vh;
+      padding-top: 80px;
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url('https://images.unsplash.com/photo-1613326367421-3702e0627031?auto=format&fit=crop&w=1950&q=80') center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .hero p {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      max-width: 600px;
+      animation: fadeInUp 1.5s ease-out;
+    }
+
+    .hero button {
+      margin-top: 40px;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      border: none;
+      background: #ff5252;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      animation: fadeInUp 2s ease-out;
+    }
+
+    .hero button:hover {
+      background: #d50000;
+      transform: scale(1.05);
+    }
+
+    .section {
+      padding: 80px 20px;
+      max-width: 1000px;
+      margin: auto;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s ease-out;
+    }
+
+    .section.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #0277bd;
+    }
+
+    .section p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .feature {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .feature h3 {
+      margin-bottom: 10px;
+      color: #d32f2f;
+    }
+
+    .cta {
+      text-align: center;
+      padding: 60px 20px;
+      background: #263238;
+      color: white;
+    }
+
+    .cta button {
+      margin-top: 20px;
+      padding: 14px 30px;
+      font-size: 1.2rem;
+      background: #00c853;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .cta button:hover {
+      background: #00a043;
+      transform: scale(1.05);
+    }
+
+    footer {
+      background: #263238;
+      color: #ccc;
+      padding: 60px 20px 30px;
+    }
+
+    .footer-container {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .footer-column {
+      flex: 1 1 250px;
+      margin-bottom: 20px;
+    }
+
+    .footer-column h3, .footer-column h4 {
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .footer-column p, .footer-column a {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    .footer-column a:hover {
+      color: #00c853;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .social-links a {
+      font-size: 1.5rem;
+      color: #0077b5;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #0e76a8;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">QR LifeCard</div>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div class="nav-buttons" id="nav-menu">
+      <a href="loginsignup.html">Login</a>
+      <a href="profile.html">Profile</a>
+      <a href="familyinfo.html">Family Info</a>
+      <a href="qrgen.html">QR Generator</a>
+      <a href="logout.html">Signout</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Welcome to QR LifeCard</h1>
+    <p>A quick scan can save a life. Store your medical info securely and accessibly with a QR code.</p>
+    <button onclick="window.location.href='begin.html'">Begin Now</button>
+  </section>
+
+  <!-- Idea -->
+  <section class="section" id="idea">
+    <h2>The Idea</h2>
+    <p>In emergencies, access to vital medical information can save lives. QR LifeCard offers a secure, scannable QR code containing health info like allergies, blood type, and emergency contacts.</p>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <h2>Features</h2>
+    <div class="features">
+      <div class="feature">
+        <h3>QR Access</h3>
+        <p>Scan to access emergency data instantly from a sticker, keychain, or mobile device.</p>
+      </div>
+      <div class="feature">
+        <h3>Encrypted & Secure</h3>
+        <p>Your data is stored safely with encryption and limited access options.</p>
+      </div>
+      <div class="feature">
+        <h3>Customizable</h3>
+        <p>Add allergies, medications, health conditions, and ICE contacts easily.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="section" id="benefits">
+    <h2>Who Can Use It?</h2>
+    <p>Perfect for delivery riders, senior citizens, children, or anyone with medical needs. A small QR sticker or card can make a huge difference in emergencies.</p>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta">
+    <h2>Get Started with QR LifeCard</h2>
+    <p>Create your own LifeCard and ensure your medical details are always a scan away.</p>
+    <button onclick="window.location.href='begin.html'">Begin Now</button>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>QR LifeCard</h3>
+        <p>Your health, one scan away. Stay safe, stay prepared.</p>
+      </div>
+      <div class="footer-column">
+        <h4>Quick Links</h4>
+        <a href="#idea">The Idea</a><br>
+        <a href="#features">Features</a><br>
+        <a href="#benefits">Who Can Use</a>
+      </div>
+      <div class="footer-column">
+        <h4>Contact</h4>
+        <p>Email: support@qrlifecard.com</p>
+        <p>Phone: +91-9999999999</p>
+      </div>
+    </div>
+
+    <!-- LinkedIn Section -->
+    <div class="footer-column">
+      <h4>Meet the Team</h4>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/abhii026?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">Abhishek Singh</a>
+        <a href="https://www.linkedin.com/in/shubham-singh-05987b356?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">Shubham Singh</a>
+        <a href="https://www.linkedin.com/in/aayush--jha/" target="_blank">Ayush Jha</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2025 QR LifeCard. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    // Reveal sections on scroll
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(section => observer.observe(section));
+
+    // Hamburger toggle
+    function toggleMenu() {
+      document.getElementById("nav-menu").classList.toggle("show");
+    }
+
+    // Optional: Hide menu on outside click
+    window.onclick = function(e) {
+      const menu = document.getElementById("nav-menu");
+      const hamburger = document.getElementById("hamburger");
+      if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove("show");
+      }
+    };
+  </script>
+
+</body>
+</html>

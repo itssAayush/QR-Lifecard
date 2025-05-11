@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR LifeCard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      /* background: #f4f4f5; */
+      background-color: #2c5364;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .qr-container {
+      text-align: center;
+    }
+    #qrcode {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>QR LifeCard Generator</h1>
+  <div class="card">
+    <div class="form-group"><input type="text" id="name" placeholder="Full Name"></div>
+    <div class="form-group"><input type="text" id="bloodType" placeholder="Blood Type (e.g. O+)"></div>
+    <div class="form-group"><input type="text" id="allergies" placeholder="Allergies"></div>
+    <div class="form-group"><input type="text" id="conditions" placeholder="Health Conditions"></div>
+    <div class="form-group"><input type="text" id="medications" placeholder="Medications"></div>
+    <div class="form-group"><input type="text" id="iceContact" placeholder="ICE Contact (Name & Phone)"></div>
+    <button onclick="generateQRCode()" style="padding: 0.75rem 1.5rem; border:none; background:#4f46e5; color:white; border-radius:8px; cursor:pointer">Generate QR</button>
+  </div>
+  <div class="qr-container">
+    <div id="qrcode"></div>
+    <p style="color:#ffffff; font-size:0.9rem">Scan to view emergency info</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+  function generateQRCode() {
+    const data = {
+      name: document.getElementById('name').value,
+      bloodType: document.getElementById('bloodType').value,
+      allergies: document.getElementById('allergies').value,
+      conditions: document.getElementById('conditions').value,
+      medications: document.getElementById('medications').value,
+      iceContact: document.getElementById('iceContact').value
+    };
+
+    const encodedData = btoa(JSON.stringify(data));
+    const url = `https://qrlifecard.app/info/${encodedData}`;
+
+    QRCode.toDataURL(url, { width: 256 }, function (err, src) {
+      if (err) return console.error(err);
+      document.getElementById('qrcode').innerHTML = `<img src=\"${src}\" alt=\"QR Code\" />`;
+    });
+  }
+</script>
+
+</body>
+</html>
